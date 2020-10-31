@@ -1,0 +1,734 @@
+{% include 'navbar.html' %}
+{% load crispy_forms_tags %}
+{% load  static %}
+<!--#region css-->
+<style>
+  html,
+  body {
+    overflow-x: hidden;
+  }
+</style>
+
+<style>
+  form {
+    text-align: center;
+  }
+</style>
+
+<style>
+  .mid {
+    position: absolute;
+    /* or absolute */
+    width: 100%;
+    top: 35%;
+    left: 26%;
+
+  }
+
+  .avatar {
+    vertical-align: middle;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+
+</style>
+<style>
+  #sticky_comment {
+    top: 6%;
+    left: 7%;
+
+    position: fixed;
+    overflow-y: hidden;
+    overflow-x: hidden;
+  }
+
+  #mid {
+    position: absolute;
+    width: 100%;
+    top: 6%;
+    left: 25%;
+  }
+
+  #profil_sticky {
+    top: 6%;
+    left: 63%;
+
+    position: fixed;
+    overflow-y: hidden;
+    overflow-x: hidden;
+  }
+
+  #alert {
+    top: 22%;
+    left: 63%;
+    width: 20%;
+
+    position: fixed;
+    overflow-y: hidden;
+    overflow-x: hidden;
+  }
+
+  #menü {
+    top: 20%;
+    left: 63%;
+    width: 20%;
+
+    position: fixed;
+    overflow-y: hidden;
+    overflow-x: hidden;
+  }
+</style>
+<style>
+  @media only screen and (max-width: 1300px) {
+    #profil_sticky {
+      display: none;
+    }
+
+    #sticky_comment {
+      display: none;
+    }
+
+    #list {
+      display: none;
+    }
+  }
+</style>
+<style>
+  .modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 99;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+  }
+  .modalfullscreen {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 99;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+  }
+  /* Modal Content */
+  .modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%;
+  }
+
+  /* The Close Button */
+  .close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+</style>
+<!--#endregion-->
+<!--#region Popup Comment  -->
+
+<div id="myModal" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <form method="POST">
+      {% csrf_token %}
+      {{ formpopup.commentpopup|as_crispy_field }}
+      <button type="button" name="popup" onclick="return recomment()" class="btn btn-success pull-right">Yorum
+        Yap</button>
+    </form>
+    <div class="card">
+      <div class="card-header card-header-warning">
+        <div class="row">
+          <img style="margin: 5px;" src="{% static 'assets/img/faces/card-profile2-square.jpg' %}" alt="Avatar"
+            class="avatar">
+          <div>
+            <h4 id='firstlastname' class="card-title">Yorumu Yapan</h4>
+            <a id='date' style="right:1%;  position: absolute;">date</a>
+            <p id='username' class="card-category"> usernamepopup </p>
+          </div>
+
+        </div>
+      </div>
+      <div class="card-body table-responsive">
+        <div id='connent_popup'>
+          content
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <!--#endregion main  -->
+{% block blockname %}
+<!--#region Alert-->
+<div class="alert alert-info" id="alert" style="display: none;">
+  <span id="alert_inf"></span>
+</div>
+<!--#endregion -->
+<div class="main-panel">
+  <div class="content">
+
+    <div class="container-fluid">
+      <div id="sticky_comment" class="col-md-3">
+        <div class="card">
+          <div class="card-header card-header-warning">
+            <h4 class="card-title">Bir Yorumda Bulun</h4>
+          </div>
+          <div class="card-body table-responsive">
+            <form onkeyup="finduser(this)" method="POST">
+              {% csrf_token %}
+              {{ form.comment|as_crispy_field }}
+              <div class="row"> <i class="material-icons">backup</i> <input type='file' id='upload'
+                  onchange="readURL(this);" />
+                <img id="image" style="visibility: hidden;" alt="your image" /> </div>
+
+              <button type="button" name="post" onclick="return test()" class="btn btn-success pull-right">Yorum
+                Yap</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!--
+        <div id="mid" class="col-md-4">
+          <div   class="card">
+            <div class="card-header card-header-warning">
+              <h4 class="card-title">Günün Favori Yorumu</h4>
+              <p class="card-category">Statu işi</p>
+            </div>
+            <div class="card-body table-responsive">  
+  <i class="material-icons">sports_handball</i>
+  <i class="material-icons">favorite_border_black</i>
+</div>
+-->
+
+      <div id="mid">
+        <div class="col-md-4">
+          Filitre gelcek
+        </div>
+
+<!--#region Comment List -->
+        {% for comment in comments %}
+        <div class="col-md-4">
+          <div class="card">
+            <div  name={{comment.id}} class="card-header card-header-warning">
+              <div class="row">
+                <img style="margin: 5px;" src="{% static 'assets/img/faces/card-profile2-square.jpg' %}" alt="Avatar"
+                  class="avatar">
+                <div>
+                  <h4 class="card-title">{{comment.user_id.first_name}} {{comment.user_id.last_name}}</h4>
+                  <p class="card-category"> {{comment.user_id.username}} <a
+                      style="right:1%;  position: absolute;">{{comment.date}}</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="card-body table-responsive">
+              {{comment.comment}}
+              <br>
+              <br>
+              {% if  comment.picture %}
+              <div class="row">
+                <img  onclick="fullscreen('{{comment.picture.url}}','{{comment.comment}}','{{comment.user_id.first_name}} {{comment.user_id.last_name}}','{{comment.user_id.username}}','{{comment.date}}','{{comment.id}}')" src="{{comment.picture.url}}" src="{{comment.picture.url}}" style=" display: block;margin-left: auto;margin-right: auto;width: 50%;">
+              </div>
+              <br>
+              {% endif %}
+              {% if comment.parent %}
+              <div class="card">
+                <div class="card-header card-header-warning">
+                  <div class="row">
+                    <img style="margin: 5px;" src="{% static 'assets/img/faces/card-profile2-square.jpg' %}"
+                      alt="Avatar" class="avatar">
+                    <div>
+                      <h4 class="card-title">{{comment.parent.user_id.first_name}} {{comment.parent.user_id.last_name}}
+                      </h4>
+                      <p class="card-category"> {{comment.parent.user_id.username}} <a
+                          style="right:1%;  position: absolute;">{{comment.parent.date}}</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body table-responsive">
+                  <div id='connent_popup'>
+                    {{comment.parent.comment}}
+                    {% if  comment.parent.picture %}
+                    <br>
+                    <div class="row">
+                      <img onclick="fullscreen('{{comment.parent.picture.url}}','{{comment.parent.comment}}','{{comment.parent.user_id.first_name}} {{comment.parent.user_id.last_name}}','{{comment.parent.user_id.username}}','{{comment.date}}','{{comment.id}}')" src="{{comment.parent.picture.url}}" style=" display: block;
+                margin-left: auto;
+                margin-right: auto;
+                width: 50%;">
+                    </div>
+                    <br>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              <div class="row" style="margin-left: 20%;">
+                <div id='{{comment.id}}' type='button'
+                  onclick="return popup(this.id,'{{comment.comment}}','{{comment.date}}', 
+                  '{{comment.user_id.username}}','{{comment.user_id.first_name}} {{comment.user_id.last_name}}',{% if comment.picture %}'{{comment.picture.url}}'{%else%}0{% endif %})"
+                  class="col-md-4">
+                  <i class="material-icons">sports_handball</i>
+                </div>
+                <div style="margin-left: 0%;" id='{{comment.id}}' onclick="like('{{comment.id}}')" class="col-md-4">
+                  <i class="material-icons">favorite</i><b>{{comment.likes.count}}</b></div>
+                <div id='{{comment.id}}' onclick="subcommentvisible('{{comment.id}}')" class="col-md-4">
+                  <i class="material-icons">comment</i><b>{{comment.subcomments.count}}</b>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+<!--#endregion-->
+
+    <div id="profil_sticky" class="col-md-2">
+      <div class="card">
+        <div class="card-header card-header-warning">
+          <div class="row">
+            <img style="margin: 5px;" src="{% static 'assets/img/faces/card-profile2-square.jpg' %}" alt="Avatar"
+              class="avatar">
+            <div>
+              <h4 class="card-title">{{user.first_name}} {{user.last_name}}</h4>
+              <p class="card-category"> {{user.username}}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="card-body table-responsive">
+          {% now "jS F Y H:i" %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!--#region Sub Comment-->
+    <div style="left: 63%;top: 40%;position: fixed;visibility: hidden;" id="subcomment" class="col-md-2">
+      <div class="card">
+        <div class="card-header card-header-warning">
+          Yorum Bırak       <span onclick='hiddensubcomment()'  class="close">&times;</span>
+
+        </div>
+        <div class="card-body table-responsive">
+          <form method="POST">
+            {% csrf_token %}
+            {{ formsubcomment.subcomment|as_crispy_field }}
+            <i class="material-icons">backup</i> <input type='file' id='uploadsubcomment'
+                  onchange="readsubcommentURL(this);" />
+                  <img id="imagesubcomment" style="visibility: hidden;"  /> </div>
+            <button type="button"  id="buttonsubcomment" onclick="subcommentadd()" class="btn btn-success pull-right">Yorum
+              Yap</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<!--#endregion-->
+
+<!--#region Popup FUll Screen Image-->
+  <div id="popupfullscreen" style="z-index: 9999;" class="modalfullscreen">
+    <div id="hid" style="right: 1%;;top:1%;position: absolute;width: 26%;height: auto;" class="card">
+      <div class="card-header card-header-warning">
+        <h4 id='popupfullscreenname' class="card-title">Yorumu Yapan</h4>
+        <a id='popupfullscreendate' style="right:1%;  position: absolute;">date</a>
+        <a id='popupfullscreennick' class="card-category">Statu işi</a>
+      </div>
+      <div id="fullscreenpopupcontent" class="card-body table-responsive">
+        content 
+          
+      </div>
+    </div>
+    <div style="top:0%;left:1%;position: absolute;" >
+      <span  id="close"  class="close">&times;</span>
+    </div>
+      <div style="left:20%;top:5%;position: sticky;" id='popupfullscreemimage'>
+
+    </div>
+  </div>
+  <!--#endregion-->
+  {% endblock blockname %}
+<!--#region POST Comment-->
+<script>
+  function test() {
+    console.log($('#id_comment').serialize());
+    console.log(document.getElementById('id_comment').value);
+    console.log(document.getElementById('upload').files[0]);
+    let pc = document.getElementById('upload').files[0];
+    var form_data = new FormData();
+    form_data.append('picture', pc);
+    form_data.append('comment', document.getElementById('id_comment').value);
+    var data_c = {
+      comment: document.getElementById('id_comment').value,
+    };
+    var adres = window.origin;
+    fetch(adres + "/comment/commentadd", {
+      method: "POST",
+      credentials: "include",
+      data: form_data,
+      body: form_data,
+      cache: "no-cache",
+      headers: new Headers({ "contentType": "multipart/form-data", "X-CSRFToken": '{{csrf_token}}' })
+    }).then(function (response) {
+      console.log(response);
+      if (response.status == 200) {
+        document.getElementById('alert_inf').innerHTML = document.getElementById('id_comment').value + ' ' + 'yorumu yapıldı';
+        document.getElementById("alert").className= "alert alert-info";
+        document.getElementById('alert').style.display = 'block';
+        document.getElementById('id_comment').value = "";
+        document.getElementById('upload').value = "";
+        document.getElementById('image').style.visibility = 'hidden';
+        setTimeout(() => { document.getElementById('alert').style.display = 'none'; }, 5000);
+      }
+      else {
+        document.getElementById('alert_inf').innerHTML = 'Bir Hata Oluştu Tekrar Deneyiniz';
+        document.getElementById("alert").className = "alert alert-danger";
+        document.getElementById('alert').style.display = 'block';
+        setTimeout(() => { document.getElementById('alert').style.display = 'none'; }, 5000);
+      }
+    })
+  }
+</script>
+<!--#endregion-->
+<!--#region POST Like-->
+<script>
+  function like(comment) {
+    var data = {
+      id: comment,
+    }
+    var adres = window.origin;
+    fetch(adres + "/comment/commentlike", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(data),
+      cache: "no-cache",
+      headers: new Headers({ "content-type": "application/json", "X-CSRFToken": '{{csrf_token}}' })
+    })
+  }
+</script>
+<!--#endregion-->
+<!--#region Fill In Popup-->
+<script>
+  function popup(comment_index, comment, date, username, firstlastname,imageurl) {
+    var modal = document.getElementById("myModal");
+    var span = document.getElementsByClassName("close")[0];
+    document.getElementById('firstlastname').innerHTML = firstlastname;
+    document.getElementsByName('popup').value = comment_index;
+    document.getElementById('date').innerHTML = date;
+    document.getElementById('username').innerText = username;
+    document.getElementById('connent_popup').innerHTML = comment;
+    if(imageurl){
+      var img = document.createElement('img'); 
+            img.src =  imageurl;
+            img.style="display: block;width: 50%;"
+            document.getElementById('connent_popup').appendChild(img); 
+    }
+    modal.style.display = "block";
+    span.onclick = function () {
+      modal.style.display = "none";
+      if(img){img.remove()}
+    }
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+        if(img){img.remove()}
+      }
+    }
+  }
+</script>
+<!--#endregion-->
+<!--#region POST Re Comment-->
+<script>
+  function recomment() {
+    console.log(document.getElementById('id_commentpopup').value);
+    comment = document.getElementById('id_commentpopup').value;
+    var data = {
+      comment: comment,
+      id: document.getElementsByName('popup').value
+    }
+
+    var adres = window.origin;
+    fetch(adres + "/comment/recomment", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(data),
+      cache: "no-cache",
+      headers: new Headers({ "content-type": "application/json", "X-CSRFToken": '{{csrf_token}}' })
+    }).then(function(response){
+      if (response.status == 200 ){
+        document.getElementById("myModal").style.display="none";
+        document.getElementById('alert_inf').innerHTML = comment + ' ' + 'yorumu yapıldı';
+        document.getElementById("alert").className= "alert alert-info";
+        document.getElementById('alert').style.display = 'block';
+        document.getElementById('id_comment').value = "";
+        document.getElementById('upload').value = "";
+        document.getElementById('image').style.visibility = 'hidden';
+        setTimeout(() => { document.getElementById('alert').style.display = 'none'; }, 5000);
+      }
+      else{
+        document.getElementById('alert_inf').innerHTML = 'Bir Hata Oluştu Tekrar Deneyiniz';
+        document.getElementById("alert").className = "alert alert-danger";
+        document.getElementById('alert').style.display = 'block';
+        setTimeout(() => { document.getElementById('alert').style.display = 'none'; }, 5000);
+      }
+    })
+  }
+</script>
+<!--#endregion-->
+<!--#region Upload Image Show-->
+<script>
+  /* image upload show  */
+  function readURL(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+        $('#image')
+          .attr('src', e.target.result);
+      };
+      var image = document.getElementById('image');
+      image.style.visibility = 'visible';
+      image.style.width = '50%';
+      image.style.height = '50%';
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+</script>
+<!--#endregion-->
+<!--#region Full Screen Image-->
+<script>
+  function fullscreen(url,content,name,nick,date,id){
+    var modal = document.getElementById("popupfullscreen");
+    var span = document.getElementById("close");
+    var img = document.createElement("img");
+    var parse;
+    var header=document.getElementById('fullscreenpopupcontent');
+    document.getElementById("popupfullscreendate").innerHTML=date;
+    img.src = url;
+    img.style.maxWidth="50%";
+    img.style.minHeight="80%";
+    img.style.marginLeft="15%";
+    img.style.marginBottom="10%";
+    ft = document.getElementById("popupfullscreemimage");
+    ft.appendChild(img);
+    document.getElementById("fullscreenpopupcontent").innerHTML=content;
+    document.getElementById("popupfullscreenname").innerHTML=name;
+    document.getElementById("popupfullscreennick").innerHTML=nick;
+    modal.style.display = "block";
+    var adres = window.origin;
+    fetch(adres + "/comment/subcommentlist/"+id, {
+      method: "GET",
+    }).then(function(response){
+      return response.json();
+    }).then(function(result){
+      parse=JSON.parse(result);
+      line = document.createElement("hr");
+      line.style="height:0px;border: 4px dashed #9CA7ED;";
+      header.appendChild(line);
+      console.log(parse)
+      for (const comment in parse) {
+        console.log(parse[comment]);
+        element=document.createElement("div"); 
+        element.className="card";
+        header.appendChild(element);
+        elementnext=document.createElement("div");
+        elementnext.className="card-header card-header-warning";
+        element.appendChild(elementnext);
+        h4 = document.createElement("h4");
+        h4.className =="card-title";
+        h4.innerHTML=parse[comment]["UserFL"];
+        elementnext.appendChild(h4);
+        a = document.createElement("a");
+        a.style="right:1%;  position: absolute;"
+        a.innerHTML = Date(parse[comment]['date']);
+        elementnext.appendChild(a);
+        a_new=document.createElement("a");
+        a_new.className="card-category";
+        a_new.innerHTML=parse[comment]["UserNick"];
+        elementnext.append(a_new);
+        div_new=document.createElement("div");
+        div_new.className="card-body table-responsive";
+        div_new.innerHTML=parse[comment]["subcomment"];
+        element.appendChild(div_new);
+        if(parse[comment]["picture"]){
+          picture = document.createElement("img");
+          picture.src = "/media/"+parse[comment]["picture"];
+          picture.style="margin-left: auto;margin-right: auto;width:80%;height:80%;"
+          element.appendChild(picture);
+        }      
+      }
+    })
+    span.onclick = function () {
+      modal.style.display = "none";
+      while (header.firstChild) {
+        header.removeChild(header.firstChild);}
+      if(img){img.remove()}
+    }
+    window.onclick = function (event) {
+      console.log(event);
+      if ((event.target == modal || event.target == ft)& event.target != document.getElementById("popupfullscreemimage")) {
+        modal.style.display = "none";
+        while (header.firstChild) {
+        header.removeChild(header.firstChild);}
+        if(img){img.remove()}
+      }
+    }
+
+  }
+</script>
+<!--#endregion-->
+<!--#region Sub Comment Visible,Image Show and POST-->
+<script>
+    var lastheader = null;
+  function hiddensubcomment(){
+    document.getElementById("subcomment").style.visibility="hidden";
+    lastheader[0].style ="border-style: null;border-color: null	;"
+    document.getElementById('imagesubcomment').style.visibility="hidden";
+    document.getElementById('uploadsubcomment').value = "";
+
+  }
+  function subcommentvisible(id){
+    document.getElementById("subcomment").style.visibility="visible";
+    document.getElementById("buttonsubcomment").value=id;
+    if (lastheader){
+      lastheader[0].style ="border-style: null;border-color: null	;"
+    }
+    document.getElementsByName(id)[0].style = "border-style: solid;border-color:#0099CC;"
+    lastheader=document.getElementsByName(id);
+  }
+  function readsubcommentURL(input){
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+        $('#imagesubcomment')
+          .attr('src', e.target.result);
+      };
+      var image = document.getElementById('imagesubcomment');
+      image.style.visibility = 'visible';
+      image.style.width = '50%';
+      image.style.height = '50%';
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+  function subcommentadd(){
+    var comment = document.getElementById("id_subcomment").value;
+    let pc = document.getElementById('uploadsubcomment').files[0];
+    console.log(pc);
+    var form_data = new FormData();
+    form_data.append('subcomment',comment);
+    form_data.append('id', document.getElementById("buttonsubcomment").value);
+    console.log(pc)
+    form_data.append('picturesubcomment', pc);
+    console.log(form_data);
+    var adres = window.origin;
+    fetch(adres + "/comment/subcommentadd", {
+      method: "POST",
+      credentials: "include",
+      data: form_data,
+      body: form_data,
+      cache: "no-cache",
+      headers: new Headers({ "contentType": "multipart/form-data", "X-CSRFToken": '{{csrf_token}}' })
+    }).then(function(response){
+      if (response.status == 200 ){
+        document.getElementById('alert_inf').innerHTML = comment + ' ' + 'yorumu yapıldı';
+        document.getElementById("alert").className= "alert alert-info";
+        document.getElementById('alert').style.display = 'block';
+        document.getElementById('id_subcomment').value = "";
+        image=document.getElementById("imagesubcomment").style.visibility="hidden";
+        document.getElementById('uploadsubcomment').value = "";
+        document.getElementById("subcomment").style.visibility="hidden";
+        setTimeout(() => { document.getElementById('alert').style.display = 'none'; }, 5000);
+      }
+      else{
+        document.getElementById('alert_inf').innerHTML = 'Bir Hata Oluştu Tekrar Deneyiniz';
+        document.getElementById("alert").className = "alert alert-danger";
+        document.getElementById('alert').style.display = 'block';
+        setTimeout(() => { document.getElementById('alert').style.display = 'none'; }, 5000);
+      }
+    })
+  }
+</script>
+<!--#endregion-->
+<!--#region Search-->
+<script>
+function search(value){
+  console.log(value);
+  var adres = window.origin;
+    fetch(adres + "/comment/search/"+value, {
+      method: "GET",
+    })
+}
+</script>
+<!--#endregion-->
+<!--#region Get @usernick Commentadd  -->
+<script>
+function finduser(s){
+console.log(s);
+inform=document.getElementById('id_comment');
+console.log(inform.value[inform.value.length-1]);
+if (inform.value[inform.value.length-1]=="@" & inform.value[inform.value.length-2]==" "){
+  inform.style.color='blue';
+}
+}
+</script>
+<!--#endreigon-->
+
+
+<!--
+<script>
+setInterval(function like_count(id) {
+    var result;
+    console.log(id);
+    var adres = window.origin;
+    fetch(adres + "/comment/get_likes_count/"+id, {
+      method: "GET",
+    }).then(function(response){
+      return response.json();
+    }).then(function(result){
+      console.log(result['like'])
+    })
+    console.log(result);
+
+},2000);
+</script>-->

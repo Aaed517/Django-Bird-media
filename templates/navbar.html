@@ -1,0 +1,39 @@
+{% include 'layout.html' %}
+<style>
+    #sticky {
+    top: -1%;
+    position: fixed;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+</style>
+<!--#region Navbar -->
+<nav id="sticky" class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+    <div style="background-color: #377369;" class="container-fluid">
+    <div class="navbar-wrapper">
+        <a id="list" class="navbar-brand" href="javascript:;">Bird Media</a>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="navbar-toggler-icon icon-bar"></span>
+        <span class="navbar-toggler-icon icon-bar"></span>
+        <span class="navbar-toggler-icon icon-bar"></span>
+        </button>
+        <form class=" navbar-form">
+        <div>
+            <div style="width: 20%;left: 36%;top: 0%;position: fixed ;" class="input-group no-border">
+            <input type="text" value="" onkeyup="search(this.value)" class="form-control" size="80" placeholder="Search...">
+            <button type="submit" class="btn btn-white btn-round btn-just-icon">
+                <i class="material-icons">search</i>
+                <div class="ripple-container"></div>
+            </button>
+            </div>
+        </div>
+    </form>
+    </div>
+    </div>
+</nav>
+<!--#endregion-->
+

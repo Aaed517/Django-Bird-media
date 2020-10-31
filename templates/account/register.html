@@ -1,0 +1,115 @@
+{% include "layout.html" %} 
+
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block block %}
+
+
+<div class="col-md-12">
+    <div class="card">
+      <div class="card-header card-header-warning">
+        <h4 class="card-title">Kayıt Formu</h4>
+        <p class="card-category"></p>
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          {% csrf_token %}
+          <div class="row">
+          
+            <div class="col-md-3">
+              <div class="form-group bmd-form-group">
+                {{ form.username|as_crispy_field }}
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group bmd-form-group">
+                {{ form.firstname|as_crispy_field }}
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group bmd-form-group">
+                {{ form.lastname|as_crispy_field }}
+              </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group bmd-form-group">
+                  {{ form.mail|as_crispy_field }}
+                </div>
+              </div>
+            <div class="col-md-4">
+              <div class="form-group bmd-form-group">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group bmd-form-group">
+                {{ form.password|as_crispy_field }}  
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group bmd-form-group">
+                {{ form.confirm|as_crispy_field }}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group bmd-form-group">
+                {{ form.address|as_crispy_field }}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group bmd-form-group">
+                {{ form.country|as_crispy_field }}
+
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group bmd-form-group">
+                {{ form.city|as_crispy_field }}
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group bmd-form-group">
+                {{ form.postalcode|as_crispy_field }}
+
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group bmd-form-group">
+                {{ form.about|as_crispy_field }}
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success pull-right">Kayıt Ol</button>
+          <div class="clearfix"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {% if messages %}
+  {% for message in messages %}
+  <div style="margin-left: 50%; margin-right: 5%;" align="right" id=hide from="bottom" class="alert alert-{{message.tags}}">
+    <button type="button" " class="close" data-dismiss="alert" aria-label="Close">
+      <i class="material-icons">close</i>
+    </button>
+    <span align="left">
+      <b> Hata - </b>   {{message}}
+    </span>
+  </div>
+  {% endfor %}
+{% endif %}
+{% endblock block %}
+
+<script>
+  setTimeout(function() {
+    $('#hide').hide()
+  }, 4000);
+  </script>

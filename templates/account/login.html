@@ -1,0 +1,68 @@
+{% extends 'layout.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block body %}
+
+<div class="container">
+  <div class="row justify-content h-100">
+    <div class="col-xl-6">
+      <div class="form-input-content">
+        <div class="card login-form mb-0" style="width:80%;height:90%">
+          <div class="card-body pt-5">
+            <a class="text-center">
+              <h3>
+                <div style="color: #7A9EFF;">STREAMING SERVICE</div><br>
+                <p style="color:black;font-size:16px;margin-top:10px;">Pay to Price</p>
+              </h3>
+            </a>
+            <form class="mt-5 mb-5 login-input" method="post">
+              {% csrf_token %}
+              <div class="form-group bmd-form-group">
+                {{ form.username|as_crispy_field }}
+              </div>
+              <div class="form-group bmd-form-group">
+                <div class="input-container">
+                  {{ form.password|as_crispy_field }}
+                </div>
+              </div>
+
+              <button class="btn btn-success" style="width:100%">Giriş Yap</button><br><br>
+              <div class="text-center" style="margin-bottom:0px;color:#d6a15b;text-align:center">
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+
+
+{% if messages %}
+{% for message in messages %}
+<div style="margin-left: 50%; margin-right: 5%;" align="right" id=hide from="bottom"
+  class="alert alert-{{message.tags}}">
+  <button type="button" " class=" close" data-dismiss="alert" aria-label="Close">
+    <i class="material-icons">close</i>
+  </button>
+  <span align="left">
+    <b>
+      {% if message.tags == 'success'  %}
+      Başarılı -
+      {% else %}
+      Hata -
+      {% endif %} </b> {{message}}
+  </span>
+</div>
+{% endfor %}
+{% endif %}
+{% endblock body %}
+
+<script>
+  setTimeout(function () {
+    $('#hide').hide()
+  }, 4000);
+</script>

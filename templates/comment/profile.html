@@ -1,0 +1,108 @@
+{% include 'navbar.html' %}
+{% include 'layout.html' %}
+{% load  static %}
+<style>
+    .avatar {
+        vertical-align: middle;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+</style>
+{% block blockname %}
+<div style="margin-left: 25%;margin-top:4%;width: 40%;" class="card card-plain">
+    <div class="card-header card-header-warning">
+        <h4 class="card-title">{{user.first_name}} {{user.last_name}}</h4>
+        <p class="card-category">@{{user}}
+            <a style="margin-left: 71%;" >Katılma Tarihi {{user.date_joined}}</a>
+        </p>
+    </div>
+    <div class="row">
+        <button style="margin-left: 10%;width: 20%;background-color: #ffffff;"  class="btn btn-block"><b style="color: black;">Comment</b></button>
+        <button style="width: 20%;background-color:#ffffff"  class="btn  btn-block"><b style="color: black;">Comment & Recomment</b></button>
+        <button style="width: 20%;background-color: #ffffff;"  class="btn btn-block"><b style="color: black;">Comment</b></button>
+        <button style="width: 20%;background-color: #ffffff;"  class="btn btn-block"><b style="color: black;">Likes</b></button>
+    </div>
+</div>
+{% endblock blockname %}
+<div id="allcontent">
+{% for comment in comments %}
+{%  if not comment.parent %}
+<div style="margin-left: 28%;" class="col-md-4">
+    <div class="card">
+        <div name={{comment.id}} class="card-header card-header-warning">
+            <div class="row">
+                <img style="margin: 5px;" src="{% static 'assets/img/faces/card-profile2-square.jpg' %}" alt="Avatar"
+                    class="avatar">
+                <div>
+                    <h4 class="card-title">{{comment.user_id.first_name}} {{comment.user_id.last_name}}</h4>
+                    <p class="card-category"> {{comment.user_id.username}} <a
+                            style="right:1%;  position: absolute;">{{comment.date}}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="card-body table-responsive">
+            {{comment.comment}}
+            <br>
+            <br>
+            {% if  comment.picture %}
+            <div class="row">
+                <img onclick="fullscreen('{{comment.picture.url}}','{{comment.comment}}','{{comment.user_id.first_name}} {{comment.user_id.last_name}}','{{comment.user_id.username}}','{{comment.date}}','{{comment.id}}')"
+                    src="{{comment.picture.url}}" src="{{comment.picture.url}}"
+                    style=" display: block;margin-left: auto;margin-right: auto;width: 50%;">
+            </div>
+            <br>
+            {% endif %}
+            {% if comment.parent %}
+            <div class="card">
+                <div class="card-header card-header-warning">
+                    <div class="row">
+                        <img style="margin: 5px;" src="{% static 'assets/img/faces/card-profile2-square.jpg' %}"
+                            alt="Avatar" class="avatar">
+                        <div>
+                            <h4 class="card-title">{{comment.parent.user_id.first_name}}
+                                {{comment.parent.user_id.last_name}}
+                            </h4>
+                            <p class="card-category"> {{comment.parent.user_id.username}} <a
+                                    style="right:1%;  position: absolute;">{{comment.parent.date}}</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body table-responsive">
+                    <div id='connent_popup'>
+                        {{comment.parent.comment}}
+                        {% if  comment.parent.picture %}
+                        <br>
+                        <div class="row">
+                            <img onclick="fullscreen('{{comment.parent.picture.url}}','{{comment.parent.comment}}','{{comment.parent.user_id.first_name}} {{comment.parent.user_id.last_name}}','{{comment.parent.user_id.username}}','{{comment.date}}','{{comment.id}}')"
+                                src="{{comment.parent.picture.url}}" style=" display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;">
+                        </div>
+                        <br>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <div class="row" style="margin-left: 20%;">
+                <div id='{{comment.id}}' type='button'
+                    onclick="return popup(this.id,'{{comment.comment}}','{{comment.date}}', 
+          '{{comment.user_id.username}}','{{comment.user_id.first_name}} {{comment.user_id.last_name}}',{% if comment.picture %}'{{comment.picture.url}}'{%else%}0{% endif %})"
+                    class="col-md-4">
+                    <i class="material-icons">sports_handball</i>
+                </div>
+                <div style="margin-left: 0%;" id='{{comment.id}}' onclick="like('{{comment.id}}')" class="col-md-4">
+                    <i class="material-icons">favorite</i><b>{{comment.likes.count}}</b></div>
+                <div id='{{comment.id}}' onclick="subcommentvisible('{{comment.id}}')" class="col-md-4">
+                    <i class="material-icons">comment</i><b>{{comment.subcomments.count}}</b>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endif %}
+{% endfor %}
